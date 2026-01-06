@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Monitoring</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  font-family: Inter, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+}
+
+header {
+  background: #0F172A;
+  color: #fff;
+  padding: 18px;
+  text-align: center;
+}
+
+header h1 { margin: 0; font-size: 26px; }
+header p { margin: 6px 0 0; color: #94a3b8; }
+
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 12px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: #fff;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  text-align: center;
+}
+
+.card h3 {
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.card p {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.status-ok { color: #16A34A; }
+.status-warn { color: #F59E0B; }
+.status-down { color: #DC2626; }
+
+.chart-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+footer {
+  margin-top: 40px;
+  background: #0F172A;
+  color: #cbd5f5;
+  text-align: center;
+  padding: 14px;
+  font-size: 14px;
+}
+
+@media (max-width:600px) {
+  header h1 { font-size: 22px; }
+  .card p { font-size: 16px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Network Monitoring</h1>
+  <p>Latency • Interconnection • Site Status • Link Quality</p>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="card">
+      <h3>Latency</h3>
+      <p id="latency">0 ms</p>
+    </div>
+
+    <div class="card">
+      <h3>Interconnection</h3>
+      <p id="interconnection" class="status-ok">UP</p>
+    </div>
+
+    <div class="card">
+      <h3>Site 1</h3>
+      <p id="site1" class="status-ok">ONLINE</p>
+    </div>
+
+    <div class="card">
+      <h3>Site 2</h3>
+      <p id="site2" class="status-ok">ONLINE</p>
+    </div>
+
+    <div class="card">
+      <h3>Site 3</h3>
+      <p id="site3" class="status-ok">ONLINE</p>
+    </div>
+
+    <div class="card">
+      <h3>Bandwidth</h3>
+      <p id="bandwidth">0 Mbps</p>
+    </div>
+
+    <div class="card">
+      <h3>Uptime</h3>
+      <p id="uptime">99.99%</p>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="chart-box">
+    <canvas id="networkChart" height="200"></canvas>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Venetta Network Operations
+</footer>
+
+<script>
+const ctx = document.getElementById('networkChart').getContext('2d');
+
+const networkChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: ['-6m','-5m','-4m','-3m','-2m','-1m','Now'],
+    datasets: [
+      {
+        label: 'Latency (ms)',
+        data: [20,21,19,22,23,21,20],
+        borderColor: '#DC2626',
+        backgroundColor: 'rgba(220,38,38,.15)',
+        tension: .4,
+        fill: true,
+        yAxisID: 'y'
+      },
+      {
+        label: 'Bandwidth (Mbps)',
+        data: [350,360,340,370,365,380,375],
+        borderColor: '#16A34A',
+        backgroundColor: 'rgba(22,163,74,.15)',
+        tension: .4,
+        fill: true,
+        yAxisID: 'y1'
+      },
+      {
+        label: 'Link Quality (%)',
+        data: [99.9,99.8,99.7,99.9,99.6,99.8,99.9],
+        borderColor: '#2563EB',
+        backgroundColor: 'rgba(37,99,235,.15)',
+        tension: .4,
+        fill: true,
+        yAxisID: 'y2'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' }},
+    scales: {
+      y: {
+        position: 'left',
+        title: { display: true, text: 'Latency (ms)' }
+      },
+      y1: {
+        position: 'right',
+        grid: { drawOnChartArea: false },
+        title: { display: true, text: 'Bandwidth (Mbps)' }
+      },
+      y2: {
+        position: 'right',
+        grid: { drawOnChartArea: false },
+        title: { display: true, text: 'Link Quality (%)' },
+        min: 95,
+        max: 100
+      }
+    }
+  }
+});
+
+function updateNetwork() {
+  const latency = Math.floor(Math.random()*8 + 18);
+  const bandwidth = Math.floor(Math.random()*40 + 340);
+  const linkQuality = (99.5 + Math.random()*0.5).toFixed(2);
+  const uptime = (99.9 + Math.random()*0.09).toFixed(3);
+
+  document.getElementById('latency').innerText = latency + ' ms';
+  document.getElementById('bandwidth').innerText = bandwidth + ' Mbps';
+  document.getElementById('uptime').innerText = uptime + '%';
+
+  networkChart.data.datasets[0].data.push(latency);
+  networkChart.data.datasets[0].data.shift();
+
+  networkChart.data.datasets[1].data.push(bandwidth);
+  networkChart.data.datasets[1].data.shift();
+
+  networkChart.data.datasets[2].data.push(linkQuality);
+  networkChart.data.datasets[2].data.shift();
+
+  networkChart.update();
+}
+
+setInterval(updateNetwork, 3000);
+</script>
+
+</body>
+  </html>

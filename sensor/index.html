@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mining Sensor Inventory</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+header {
+  background: #020617;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1e293b;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+header p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.section {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.section h2 {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-bottom: 1px solid #1e293b;
+  background: #020617;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th, .table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #1e293b;
+  text-align: left;
+}
+
+.table th {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.critical { background: #7f1d1d; color: #fecaca; }
+.normal { background: #1e3a8a; color: #bfdbfe; }
+.esg { background: #064e3b; color: #bbf7d0; }
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+  padding: 16px;
+}
+
+@media (max-width: 640px) {
+  .table th, .table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Mining Farm Sensor Inventory</h1>
+  <p>Operational, Security, Network & ESG Sensors</p>
+</header>
+
+<div class="container">
+
+  <!-- POWER -->
+  <div class="section">
+    <h2>🔌 Power & Energy Sensors</h2>
+    <table class="table">
+      <tr><th>Sensor</th><th>Metric</th><th>Purpose</th><th>Priority</th></tr>
+      <tr><td>Voltage Sensor</td><td>Volt (V)</td><td>Power stability</td><td><span class="tag critical">Critical</span></td></tr>
+      <tr><td>Current Sensor</td><td>Ampere (A)</td><td>Load monitoring</td><td><span class="tag critical">Critical</span></td></tr>
+      <tr><td>Power Meter</td><td>kW / MW</td><td>Energy usage</td><td><span class="tag critical">Critical</span></td></tr>
+      <tr><td>Energy Meter</td><td>kWh</td><td>Billing & ESG</td><td><span class="tag esg">ESG</span></td></tr>
+    </table>
+  </div>
+
+  <!-- ENVIRONMENT -->
+  <div class="section">
+    <h2>🌡 Environment & Thermal Sensors</h2>
+    <table class="table">
+      <tr><th>Sensor</th><th>Metric</th><th>Purpose</th><th>Priority</th></tr>
+      <tr><td>Temperature</td><td>°C</td><td>Overheat prevention</td><td><span class="tag critical">Critical</span></td></tr>
+      <tr><td>Humidity</td><td>%RH</td><td>Condensation control</td><td><span class="tag normal">Normal</span></td></tr>
+      <tr><td>Airflow</td><td>CFM</td><td>Cooling efficiency</td><td><span class="tag normal">Normal</span></td></tr>
+    </table>
+  </div>
+
+  <!-- MINING -->
+  <div class="section">
+    <h2>⚙️ Mining Hardware Sensors</h2>
+    <table class="table">
+      <tr><th>Sensor</th><th>Metric</th><th>Purpose</th><th>Priority</th></tr>
+      <tr><td>Hashrate</td><td>TH/s</td><td>Revenue tracking</td><td><span class="tag critical">Critical</span></td></tr>
+      <tr><td>ASIC Temperature</td><td>°C</td><td>Hardware health</td><td><span class="tag critical">Critical</span></td></tr>
+      <tr><td>Rejected Share</td><td>Count</td><td>Performance loss</td><td><span class="tag normal">Normal</span></td></tr>
+    </table>
+  </div>
+
+  <!-- NETWORK -->
+  <div class="section">
+    <h2>🌐 Network Sensors</h2>
+    <table class="table">
+      <tr><th>Sensor</th><th>Metric</th><th>Purpose</th><th>Priority</th></tr>
+      <tr><td>Latency</td><td>ms</td><td>Mining stability</td><td><span class="tag critical">Critical</span></td></tr>
+      <tr><td>Bandwidth</td><td>Mbps</td><td>Throughput</td><td><span class="tag normal">Normal</span></td></tr>
+      <tr><td>Gateway Status</td><td>Up / Down</td><td>Failover detection</td><td><span class="tag critical">Critical</span></td></tr>
+    </table>
+  </div>
+
+  <!-- SECURITY -->
+  <div class="section">
+    <h2>🔐 Physical Security & Access Sensors</h2>
+    <table class="table">
+      <tr><th>Sensor</th><th>Metric</th><th>Purpose</th><th>Priority</th></tr>
+      <tr><td>RFID / Biometric</td><td>Access Log</td><td>Mining room access</td><td><span class="tag critical">Critical</span></td></tr>
+      <tr><td>Door Sensor</td><td>Open / Close</td><td>Intrusion detection</td><td><span class="tag critical">Critical</span></td></tr>
+      <tr><td>Smoke / Fire</td><td>Alert</td><td>Safety</td><td><span class="tag critical">Critical</span></td></tr>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Venetta Infrastructure • Sensor & ESG Ready
+</footer>
+
+</body>
+      </html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hydropower SCADA Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{margin:0;font-family:Inter,Arial;background:#0a0e14;color:#e5e7eb}
+.container{max-width:1920px;margin:auto;padding:12px}
+h1{text-align:center;font-size:22px;margin-bottom:4px}
+.subtitle{text-align:center;color:#9ca3af;margin-bottom:12px}
+.mode-panel{text-align:center;margin-bottom:12px}
+.mode-panel button{margin:2px;padding:4px 8px;border-radius:4px;border:none;background:#3b82f6;color:#fff;cursor:pointer}
+.info-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.info-item{background:#111827;padding:8px;border-radius:6px;text-align:center}
+.info-item .label{font-size:12px;color:#93c5fd}
+.info-item .value{font-size:16px;font-weight:600;color:#fff;margin-top:2px}
+.section{margin-bottom:18px}
+.section h2{font-size:14px;color:#c7d2fe;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:768px){.grid-2{grid-template-columns:1fr}}
+.card{background:#111827;border-radius:10px;padding:10px}
+.card-header{display:flex;justify-content:space-between;align-items:flex-end;gap:6px;flex-wrap:wrap}
+.title{font-size:12px;color:#93c5fd}
+.metric{font-size:10px;color:#9ca3af}
+.metric b{display:block;font-size:14px;color:#e5e7eb}
+canvas{height:140px!important}
+.footer{text-align:center;font-size:11px;color:#6b7280;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="container" id="dashboard">
+<h1>Hydropower SCADA Dashboard</h1>
+<div class="subtitle">Realtime Historian • 5s Update • Daily/Weekly/Monthly/Yearly</div>
+
+<div class="mode-panel">
+<button onclick="setMode('daily')">Daily</button>
+<button onclick="setMode('weekly')">Weekly</button>
+<button onclick="setMode('monthly')">Monthly</button>
+<button onclick="setMode('yearly')">Yearly</button>
+<button onclick="exportCSV()">Export CSV</button>
+<button onclick="toggleFullScreen()">Full Screen</button>
+</div>
+
+<div class="info-panel">
+<div class="info-item"><div class="label">RPM</div><div class="value" id="infoRPM">0</div></div>
+<div class="info-item"><div class="label">Temperature (°C)</div><div class="value" id="infoTemp">0</div></div>
+<div class="info-item"><div class="label">Voltage (V)</div><div class="value" id="infoVolt">0</div></div>
+<div class="info-item"><div class="label">Frequency (Hz)</div><div class="value" id="infoFreq">0</div></div>
+<div class="info-item"><div class="label">Water Level (m)</div><div class="value" id="infoWater">0.00</div></div>
+<div class="info-item"><div class="label">Power (kW)</div><div class="value" id="infoPower">0</div></div>
+<div class="info-item"><div class="label">Power Factor</div><div class="value" id="infoPF">0</div></div>
+<div class="info-item"><div class="label">Imbalance (%)</div><div class="value" id="infoImb">0</div></div>
+</div>
+
+<!-- TURBINE CHARTS -->
+<div class="section">
+<h2>Turbine</h2>
+<div class="grid-2">
+<div class="card">
+<div class="card-header">
+<div class="title">RPM</div><div class="metric">CUR<b id="rpmCur"></b></div><div class="metric">MIN<b id="rpmMin"></b></div><div class="metric">MAX<b id="rpmMax"></b></div>
+</div>
+<canvas id="rpmChart"></canvas>
+</div>
+<div class="card">
+<div class="card-header">
+<div class="title">Temperature (°C)</div><div class="metric">CUR<b id="tempCur"></b></div><div class="metric">MIN<b id="tempMin"></b></div><div class="metric">MAX<b id="tempMax"></b></div>
+</div>
+<canvas id="tempChart"></canvas>
+</div>
+<div class="card">
+<div class="card-header">
+<div class="title">Voltage (V)</div><div class="metric">CUR<b id="voltCur"></b></div><div class="metric">MIN<b id="voltMin"></b></div><div class="metric">MAX<b id="voltMax"></b></div>
+</div>
+<canvas id="voltChart"></canvas>
+</div>
+<div class="card">
+<div class="card-header">
+<div class="title">Frequency (Hz)</div><div class="metric">CUR<b id="freqCur"></b></div><div class="metric">MIN<b id="freqMin"></b></div><div class="metric">MAX<b id="freqMax"></b></div>
+</div>
+<canvas id="freqChart"></canvas>
+</div>
+</div>
+</div>
+
+<!-- WATER LEVEL -->
+<div class="section">
+<h2>Hydrology</h2>
+<div class="grid">
+<div class="card">
+<div class="card-header">
+<div class="title">Water Level (m)</div><div class="metric">CUR<b id="waterCur"></b></div><div class="metric">MIN<b id="waterMin"></b></div><div class="metric">MAX<b id="waterMax"></b></div>
+</div>
+<canvas id="waterChart"></canvas>
+</div>
+</div>
+</div>
+
+<!-- GENERATOR VOLTAGE -->
+<div class="section">
+<h2>Generator Voltage – Phase R S T</h2>
+<div class="grid">
+<div class="card"><div class="card-header"><div class="title">Phase R (V)</div><div class="metric">CUR<b id="vRCur"></b></div><div class="metric">MIN<b id="vRMin"></b></div><div class="metric">MAX<b id="vRMax"></b></div></div><canvas id="vRChart"></canvas></div>
+<div class="card"><div class="card-header"><div class="title">Phase S (V)</div><div class="metric">CUR<b id="vSCur"></b></div><div class="metric">MIN<b id="vSMin"></b></div><div class="metric">MAX<b id="vSMax"></b></div></div><canvas id="vSChart"></canvas></div>
+<div class="card"><div class="card-header"><div class="title">Phase T (V)</div><div class="metric">CUR<b id="vTCur"></b></div><div class="metric">MIN<b id="vTMin"></b></div><div class="metric">MAX<b id="vTMax"></b></div></div><canvas id="vTChart"></canvas></div>
+</div>
+</div>
+
+<!-- GENERATOR CURRENT -->
+<div class="section">
+<h2>Generator Current – Phase R S T</h2>
+<div class="grid">
+<div class="card"><div class="card-header"><div class="title">Phase R (A)</div><div class="metric">CUR<b id="iRCur"></b></div><div class="metric">MIN<b id="iRMin"></b></div><div class="metric">MAX<b id="iRMax"></b></div></div><canvas id="iRChart"></canvas></div>
+<div class="card"><div class="card-header"><div class="title">Phase S (A)</div><div class="metric">CUR<b id="iSCur"></b></div><div class="metric">MIN<b id="iSMin"></b></div><div class="metric">MAX<b id="iSMax"></b></div></div><canvas id="iSChart"></canvas></div>
+<div class="card"><div class="card-header"><div class="title">Phase T (A)</div><div class="metric">CUR<b id="iTCur"></b></div><div class="metric">MIN<b id="iTMin"></b></div><div class="metric">MAX<b id="iTMax"></b></div></div><canvas id="iTChart"></canvas></div>
+</div>
+</div>
+
+<!-- ELECTRICAL PERFORMANCE -->
+<div class="section">
+<h2>Electrical Performance</h2>
+<div class="grid">
+<div class="card"><div class="card-header"><div class="title">Active Power (kW)</div><div class="metric">CUR<b id="pCur"></b></div><div class="metric">MIN<b id="pMin"></b></div><div class="metric">MAX<b id="pMax"></b></div></div><canvas id="powerChart"></canvas></div>
+<div class="card"><div class="card-header"><div class="title">Power Factor</div><div class="metric">CUR<b id="pfCur"></b></div><div class="metric">MIN<b id="pfMin"></b></div><div class="metric">MAX<b id="pfMax"></b></div></div><canvas id="pfChart"></canvas></div>
+<div class="card"><div class="card-header"><div class="title">Phase Current Imbalance (%)</div><div class="metric">CUR<b id="imbCur"></b></div><div class="metric">MIN<b id="imbMin"></b></div><div class="metric">MAX<b id="imbMax"></b></div></div><canvas id="imbChart"></canvas></div>
+</div>
+</div>
+
+<div class="footer">Hydropower Internal SCADA Dashboard • All Rights Reserved • 2026</div>
+
+<script>
+// Fullscreen
+function toggleFullScreen(){const el=document.getElementById('dashboard');if(!document.fullscreenElement){el.requestFullscreen();}else{document.exitFullscreen();}}
+
+// Chart init
+function mkChart(id,color){return new Chart(document.getElementById(id),{type:'line',data:{labels:[],datasets:[{data:[],borderColor:color,backgroundColor:color+'33',fill:true,tension:.25,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});}
+const charts={
+rpm:mkChart('rpmChart','#22c55e'),temp:mkChart('tempChart','#f59e0b'),volt:mkChart('voltChart','#10b981'),freq:mkChart('freqChart','#3b82f6'),
+water:mkChart('waterChart','#3b82f6'),vR:mkChart('vRChart','#ef4444'),vS:mkChart('vSChart','#ef4444'),vT:mkChart('vTChart','#ef4444'),
+iR:mkChart('iRChart','#6366f1'),iS:mkChart('iSChart','#6366f1'),iT:mkChart('iTChart','#6366f1'),
+power:mkChart('powerChart','#10b981'),pf:mkChart('pfChart','#eab308'),imb:mkChart('imbChart','#f97316')
+};
+
+let mode='daily';
+function setMode(m){mode=m;updateAll();}
+
+function genLabels(){ 
+  const now=new Date(); let start=new Date(); 
+  if(mode==='daily'){start.setHours(0,0,0,0);}
+  if(mode==='weekly'){start.setDate(now.getDate()-6);start.setHours(0,0,0,0);}
+  if(mode==='monthly'){start.setDate(now.getDate()-29);start.setHours(0,0,0,0);}
+  if(mode==='yearly'){start.setDate(now.getDate()-364);start.setHours(0,0,0,0);}
+  const diff=Math.floor((now-start)/60000); 
+  const arr=[]; for(let i=0;i<=diff;i++){ 
+    const t=new Date(start.getTime()+i*60000); 
+    arr.push(t.toTimeString().slice(0,5));
+  } return arr;
+}
+
+function simulate(labels){
+  const rpm=labels.map(()=>1500+Math.random()*2|0);
+  const temp=labels.map(()=>65+Math.random()*2|0);
+  const volt=labels.map(()=>+(400+Math.random()*2).toFixed(0));
+  const freq=labels.map(()=>+(50+Math.random()*0.02).toFixed(2));
+  const water=labels.map(()=>+(3+Math.random()*0.2).toFixed(2));
+  const vR=labels.map(()=>400+Math.random()*2|0),vS=labels.map(()=>400+Math.random()*2|0),vT=labels.map(()=>400+Math.random()*2|0);
+  const iR=labels.map(()=>+(780+Math.random()*5).toFixed(2)),iS=labels.map(()=>+(780+Math.random()*5).toFixed(2)),iT=labels.map(()=>+(780+Math.random()*5).toFixed(2));
+  const pf=labels.map(()=>+(0.94+Math.random()*0.01).toFixed(2));
+  const power=iR.map((_,i)=>+((Math.sqrt(3)*((vR[i]+vS[i]+vT[i])/3)*((iR[i]+iS[i]+iT[i])/3)*pf[i]/1000).toFixed(0)));
+  const imb=iR.map((_,i)=>+((Math.max(Math.abs(iR[i]-((iR[i]+iS[i]+iT[i])/3)),Math.abs(iS[i]-((iR[i]+iS[i]+iT[i])/3)),Math.abs(iT[i]-((iR[i]+iS[i]+iT[i])/3)))/((iR[i]+iS[i]+iT[i])/3)*100).toFixed(2)));
+  return {rpm,temp,volt,freq,water,vR,vS,vT,iR,iS,iT,power,pf,imb};
+}
+
+function overlay(arr,cur,min,max,u=''){cur.innerText=arr.at(-1)+u;min.innerText=Math.min(...arr)+u;max.innerText=Math.max(...arr)+u;}
+
+function updateAll(){
+  const labels=genLabels(); 
+  const data=simulate(labels);
+  for(const k in charts){charts[k].data.labels=labels; charts[k].data.datasets[0].data=data[k]; charts[k].update();}
+  overlay(data.rpm,rpmCur,rpmMin,rpmMax); overlay(data.temp,tempCur,tempMin,tempMax,' °C'); overlay(data.volt,voltCur,voltMin,voltMax,' V');
+  overlay(data.freq,freqCur,freqMin,freqMax,' Hz'); overlay(data.water,waterCur,waterMin,waterMax,' m'); 
+  overlay(data.vR,vRCur,vRMin,vRMax); overlay(data.vS,vSCur,vSMin,vSMax); overlay(data.vT,vTCur,vTMin,vTMax);
+  overlay(data.iR,iRCur,iRMin,iRMax,' A'); overlay(data.iS,iSCur,iSMin,iSMax,' A'); overlay(data.iT,iTCur,iTMin,iTMax,' A');
+  overlay(data.power,pCur,pMin,pMax,' kW'); overlay(data.pf,pfCur,pfMin,pfMax); overlay(data.imb,imbCur,imbMin,imbMax,' %');
+
+  // Info panel update
+  document.getElementById('infoRPM').innerText = data.rpm.at(-1);
+  document.getElementById('infoTemp').innerText = data.temp.at(-1);
+  document.getElementById('infoVolt').innerText = data.volt.at(-1);
+  document.getElementById('infoFreq').innerText = data.freq.at(-1);
+  document.getElementById('infoWater').innerText = data.water.at(-1);
+  document.getElementById('infoPower').innerText = data.power.at(-1);
+  document.getElementById('infoPF').innerText = data.pf.at(-1);
+  document.getElementById('infoImb').innerText = data.imb.at(-1);
+}
+
+function exportCSV(){
+  const labels=charts.rpm.data.labels; const keys=Object.keys(charts);
+  let csv='Time,'+keys.join(',')+'\n';
+  for(let i=0;i<labels.length;i++){csv+=labels[i]+','+keys.map(k=>charts[k].data.datasets[0].data[i]).join(',')+'\n';}
+  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='hydropower_export.csv'; a.click(); URL.revokeObjectURL(url);
+}
+
+updateAll(); setInterval(updateAll,5000);
+</script>
+</body>
+                                                                </html>

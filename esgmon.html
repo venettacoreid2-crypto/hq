@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESG Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  body {
+    font-family: Inter, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+  }
+
+  header {
+    background: #0F172A;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+  }
+
+  header h1 { margin: 0; font-size: 26px; }
+  header p { margin-top: 6px; color: #94a3b8; }
+
+  .container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 12px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 30px 0 12px;
+    color: #0F172A;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 18px;
+  }
+
+  .card {
+    background: #fff;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    text-align: center;
+  }
+
+  .card h3 {
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 6px;
+  }
+
+  .card p {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .chart-box {
+    background: #fff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  }
+
+  footer {
+    margin-top: 40px;
+    background: #0F172A;
+    color: #cbd5f5;
+    text-align: center;
+    padding: 14px;
+    font-size: 14px;
+  }
+
+  @media (max-width:600px) {
+    header h1 { font-size: 22px; }
+    .card p { font-size: 16px; }
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>ESG Dashboard</h1>
+  <p>Environmental • Social • Governance Performance</p>
+</header>
+
+<div class="container">
+
+  <!-- ENVIRONMENTAL -->
+  <div class="section-title">Environmental (E)</div>
+  <div class="stats">
+    <div class="card"><h3>Renewable Energy Ratio</h3><p id="renewable">0%</p></div>
+    <div class="card"><h3>Carbon Intensity</h3><p id="carbon">0 kg/kWh</p></div>
+    <div class="card"><h3>PUE</h3><p id="pue">0.00</p></div>
+    <div class="card"><h3>W / TH</h3><p id="wth">0</p></div>
+    <div class="card"><h3>Energy Cost / BTC</h3><p id="energy-btc">$0</p></div>
+  </div>
+
+  <div class="chart-box">
+    <canvas id="envChart" height="180"></canvas>
+  </div>
+
+  <!-- SOCIAL -->
+  <div class="section-title">Social (S)</div>
+  <div class="stats">
+    <div class="card"><h3>Total Employees</h3><p id="employees">0</p></div>
+    <div class="card"><h3>Local Employment</h3><p id="local">0%</p></div>
+    <div class="card"><h3>Training Hours / Year</h3><p id="training">0</p></div>
+    <div class="card"><h3>Safety Incidents</h3><p id="safety">0</p></div>
+    <div class="card"><h3>CSR Spend</h3><p id="csr">$0</p></div>
+  </div>
+
+  <!-- GOVERNANCE -->
+  <div class="section-title">Governance (G)</div>
+  <div class="stats">
+    <div class="card"><h3>Compliance Status</h3><p id="compliance">OK</p></div>
+    <div class="card"><h3>Audit Status</h3><p id="audit">Passed</p></div>
+    <div class="card"><h3>Cyber Incidents</h3><p id="cyber">0</p></div>
+    <div class="card"><h3>Board Meetings / Year</h3><p id="board">0</p></div>
+    <div class="card"><h3>ESG Score</h3><p id="esg-score">0 / 100</p></div>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Venetta ESG & Sustainability
+</footer>
+
+<script>
+/* ENVIRONMENT CHART */
+const envCtx = document.getElementById('envChart').getContext('2d');
+const envChart = new Chart(envCtx, {
+  type: 'line',
+  data: {
+    labels: ['Q1','Q2','Q3','Q4'],
+    datasets: [{
+      label: 'Carbon Intensity (kg/kWh)',
+      data: [0.42, 0.38, 0.35, 0.30],
+      borderColor: '#16A34A',
+      backgroundColor: 'rgba(22,163,74,.2)',
+      fill: true,
+      tension: .4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' }},
+    scales: { y: { beginAtZero: false }}
+  }
+});
+
+/* SIMULATION DATA */
+function updateESG() {
+  document.getElementById('renewable').innerText = Math.floor(Math.random()*20 + 70) + '%';
+  document.getElementById('carbon').innerText = (Math.random()*0.2 + 0.25).toFixed(2) + ' kg/kWh';
+  document.getElementById('pue').innerText = (Math.random()*0.2 + 1.1).toFixed(2);
+  document.getElementById('wth').innerText = Math.floor(Math.random()*10 + 28);
+  document.getElementById('energy-btc').innerText = '$' + Math.floor(Math.random()*2000 + 4000);
+
+  document.getElementById('employees').innerText = Math.floor(Math.random()*20 + 80);
+  document.getElementById('local').innerText = Math.floor(Math.random()*20 + 60) + '%';
+  document.getElementById('training').innerText = Math.floor(Math.random()*40 + 60);
+  document.getElementById('safety').innerText = Math.floor(Math.random()*2);
+  document.getElementById('csr').innerText = '$' + Math.floor(Math.random()*20000 + 50000);
+
+  document.getElementById('compliance').innerText = 'Compliant';
+  document.getElementById('audit').innerText = 'Passed';
+  document.getElementById('cyber').innerText = Math.floor(Math.random()*1);
+  document.getElementById('board').innerText = Math.floor(Math.random()*4 + 8);
+  document.getElementById('esg-score').innerText = Math.floor(Math.random()*10 + 80) + ' / 100';
+}
+
+setInterval(updateESG, 4000);
+</script>
+
+</body>
+</html>

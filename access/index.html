@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unified Access Log</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #0b1220;
+  color: #e5e7eb;
+}
+
+header {
+  background: #020617;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1e293b;
+}
+
+header h1 { margin: 0; font-size: 20px; }
+header p { margin: 4px 0 0; font-size: 13px; color: #94a3b8; }
+
+.container { padding: 16px; }
+
+.log-window {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.log-header span { font-weight: 600; font-size: 14px; }
+.log-header button {
+  background: #1e40af;
+  border: none;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.log-body {
+  max-height: 460px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.log-line {
+  display: grid;
+  grid-template-columns: 150px 140px 160px auto 120px;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #020617;
+}
+
+.log-line:hover { background: #020617; }
+
+.time { color: #94a3b8; }
+.user { color: #38bdf8; }
+.type { color: #a5b4fc; }
+.detail { color: #cbd5f5; }
+
+.ok { color: #22c55e; }
+.fail { color: #ef4444; }
+.warn { color: #facc15; }
+
+@media (max-width: 640px) {
+  .log-line { grid-template-columns: 1fr; font-size: 12px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Unified Access Log</h1>
+  <p>IT System Access & Mining Room Physical Access</p>
+</header>
+
+<div class="container">
+  <div class="log-window">
+    <div class="log-header">
+      <span>Live Event Stream</span>
+      <button onclick="addLog()">Simulate Event</button>
+    </div>
+    <div class="log-body" id="logBody"></div>
+  </div>
+</div>
+
+<script>
+const logBody = document.getElementById('logBody');
+
+const users = ['admin', 'operator01', 'tech02', 'security'];
+const eventTypes = [
+  { type: 'LOGIN_SUCCESS', cls: 'ok', detail: 'Web Dashboard Access' },
+  { type: 'LOGIN_FAILED', cls: 'fail', detail: 'Invalid Credentials' },
+  { type: 'PHYSICAL_ACCESS', cls: 'ok', detail: 'Mining Room A • RFID • Door Open' },
+  { type: 'PHYSICAL_ACCESS', cls: 'fail', detail: 'Mining Room B • Biometric • Access Denied' },
+  { type: 'CONFIG_CHANGE', cls: 'warn', detail: 'Pool Configuration Updated' }
+];
+
+function addLog() {
+  const time = new Date().toISOString().replace('T',' ').substring(0,19);
+  const user = users[Math.floor(Math.random()*users.length)];
+  const event = eventTypes[Math.floor(Math.random()*eventTypes.length)];
+
+  const row = document.createElement('div');
+  row.className = 'log-line';
+
+  row.innerHTML = `
+    <div class="time">${time}</div>
+    <div class="user">${user}</div>
+    <div class="type">${event.type}</div>
+    <div class="detail">${event.detail}</div>
+    <div class="${event.cls}">${event.cls.toUpperCase()}</div>
+  `;
+
+  logBody.prepend(row);
+  if (logBody.children.length > 150) logBody.removeChild(logBody.lastChild);
+}
+
+setInterval(addLog, 5000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Venetta Mining Farm Internal Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; }
+    html { font-size: 16px; }
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #2c2c3f);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; color: #00d1b2; }
+    h2 { font-size: clamp(1.2rem, 3vw, 1.6rem); margin-bottom: 30px; color: #fff; font-weight: 400; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .card {
+      background: #2a2a3c;
+      padding: clamp(20px, 2vw, 30px);
+      border-radius: 12px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 600;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      background: #00d1b2;
+      color: #1e1e2f;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+
+    .card-icon {
+      font-size: clamp(2rem, 6vw, 2.5rem);
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 20px 10px; }
+      .grid { gap: 15px; }
+      .card { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Venetta Farm Control Room</h1>
+  <h2>Headquarter Dashboard</h2>
+
+  <div class="grid">
+    <a class="card" href="/internal/miningmon.html">
+      <div class="card-icon">⛏️</div>
+      Mining Console
+    </a>
+    <a class="card" href="/internal/networkmon.html">
+      <div class="card-icon">🌐</div>
+      Network Dashboard
+    </a>
+    <a class="card" href="https://vencorio.com/internal/turbinmon/">
+      <div class="card-icon">⚡</div>
+      Energy Monitoring
+    </a>
+    <a class="card" href="/internal/cctvmon.html">
+      <div class="card-icon">📹</div>
+      CCTV View
+    </a>
+    <a class="card" href="/internal/esgmon.html">
+      <div class="card-icon">🌱</div>
+      ESG Metrics
+    </a>
+    <a class="card" href="/internal/accesslog.html">
+      <div class="card-icon">🔑</div>
+      Access Log
+    </a>
+    <a class="card" href="/internal/sensorlog.html">
+      <div class="card-icon">📟</div>
+      Sensor Log
+    </a>
+    <a class="card" href="/internal/siteaccess.html">
+      <div class="card-icon">🏭</div>
+      Site Access
+    </a>  
+  </div>
+
+</body>
+</html>

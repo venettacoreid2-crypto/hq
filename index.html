@@ -20,8 +20,7 @@
 
 body{
   font-family:'Inter',sans-serif;
-  background:
-    radial-gradient(circle at top, #1b2140, #0b0f1a 60%);
+  background:radial-gradient(circle at top, #1b2140, #0b0f1a 60%);
   color:var(--text-main);
   min-height:100vh;
   padding:32px 16px;
@@ -29,30 +28,15 @@ body{
   justify-content:center;
 }
 
-.container{
-  width:100%;
-  max-width:1200px;
-}
+.container{width:100%;max-width:1200px}
 
-header{
-  text-align:center;
-  margin-bottom:40px;
-}
-
+header{text-align:center;margin-bottom:40px}
 header h1{
   font-size:clamp(1.8rem,4vw,3rem);
-  font-weight:700;
-  letter-spacing:1px;
   text-transform:uppercase;
   color:var(--accent);
 }
-
-header h2{
-  font-size:clamp(1rem,2.5vw,1.4rem);
-  font-weight:400;
-  color:var(--text-sub);
-  margin-top:8px;
-}
+header h2{color:var(--text-sub);margin-top:8px}
 
 .grid{
   display:grid;
@@ -61,129 +45,154 @@ header h2{
 }
 
 .card{
+  cursor:pointer;
   position:relative;
   background:var(--bg-card);
   backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,0.08);
   border-radius:18px;
   padding:28px 22px;
-  text-decoration:none;
-  color:var(--text-main);
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:14px;
-  transition:all .35s ease;
+  transition:.35s;
   box-shadow:0 20px 40px rgba(0,0,0,.35);
 }
+.card:hover{transform:translateY(-6px) scale(1.02)}
+.icon{font-size:2.6rem}
+.card-title{font-weight:600}
 
-.card::after{
-  content:"";
-  position:absolute;
+/* ===== MODAL ===== */
+.modal{
+  position:fixed;
   inset:0;
-  border-radius:18px;
-  background:linear-gradient(135deg,transparent,rgba(0,245,200,.12));
-  opacity:0;
-  transition:.35s;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99;
+}
+.modal.active{display:flex}
+
+.modal-box{
+  background:#12182a;
+  border-radius:16px;
+  width:100%;
+  max-width:420px;
+  padding:28px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
 }
 
-.card:hover{
-  transform:translateY(-6px) scale(1.02);
-  box-shadow:0 30px 60px rgba(0,0,0,.55);
-}
-
-.card:hover::after{
-  opacity:1;
-}
-
-.icon{
-  font-size:2.6rem;
-}
-
-.card-title{
-  font-size:1.1rem;
-  font-weight:600;
+.modal-box h3{
   text-align:center;
-}
-
-.badge{
-  position:absolute;
-  top:14px;
-  right:14px;
-  font-size:.65rem;
-  padding:4px 10px;
-  border-radius:999px;
-  font-weight:600;
-  background:rgba(0,245,200,.15);
+  margin-bottom:20px;
   color:var(--accent);
-  letter-spacing:.5px;
 }
 
-@media(max-width:480px){
-  header{margin-bottom:28px}
-  .grid{gap:16px}
-  .card{padding:22px 18px}
+.field{
+  margin-bottom:14px;
+}
+.field input, .field select{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  background:#1c2340;
+  color:#fff;
+}
+
+.btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:var(--accent);
+  color:#0b0f1a;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.close{
+  text-align:center;
+  margin-top:14px;
+  font-size:.85rem;
+  color:var(--text-sub);
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
 
+<div class="container">
 <header>
   <h1>Venetta Farm Control Room</h1>
   <h2>Internal Headquarters Dashboard</h2>
 </header>
 
 <div class="grid">
-
-  <a class="card" href="/mining/">
-    <span class="badge">LIVE</span>
-    <div class="icon">⛏️</div>
-    <div class="card-title">Mining Console</div>
-  </a>
-
-  <a class="card" href="/network/">
-    <span class="badge">LIVE</span>
-    <div class="icon">🌐</div>
-    <div class="card-title">Network Monitoring</div>
-  </a>
-
-  <a class="card" href="/energy/">
-    <span class="badge">LIVE</span>
-    <div class="icon">⚡</div>
-    <div class="card-title">Energy Control</div>
-  </a>
-
-  <a class="card" href="/cctv/">
-    <span class="badge">LIVE</span>
-    <div class="icon">📹</div>
-    <div class="card-title">CCTV Surveillance</div>
-  </a>
-
-  <a class="card" href="/esg/">
-    <span class="badge">BETA</span>
-    <div class="icon">🌱</div>
-    <div class="card-title">ESG Metrics</div>
-  </a>
-
-  <a class="card" href="/access/">
-    <div class="icon">🔑</div>
-    <div class="card-title">Access Log</div>
-  </a>
-
-  <a class="card" href="/sensor/">
-    <div class="icon">📟</div>
-    <div class="card-title">Sensor Analytics</div>
-  </a>
-
-  <a class="card" href="/site/">
-    <div class="icon">🏭</div>
-    <div class="card-title">Site Management</div>
-  </a>
-
+  <div class="card" data-target="/mining/"><div class="icon">⛏️</div><div class="card-title">Mining Console</div></div>
+  <div class="card" data-target="/network/"><div class="icon">🌐</div><div class="card-title">Network Monitoring</div></div>
+  <div class="card" data-target="/energy/"><div class="icon">⚡</div><div class="card-title">Energy Control</div></div>
+  <div class="card" data-target="/cctv/"><div class="icon">📹</div><div class="card-title">CCTV Surveillance</div></div>
+  <div class="card" data-target="/esg/"><div class="icon">🌱</div><div class="card-title">ESG Metrics</div></div>
+  <div class="card" data-target="/access/"><div class="icon">🔑</div><div class="card-title">Access Log</div></div>
+  <div class="card" data-target="/sensor/"><div class="icon">📟</div><div class="card-title">Sensor Analytics</div></div>
+  <div class="card" data-target="/site/"><div class="icon">🏭</div><div class="card-title">Site Management</div></div>
+</div>
 </div>
 
+<!-- LOGIN MODAL -->
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <h3>Secure Access</h3>
+
+    <div class="field">
+      <select id="role">
+        <option value="">Select Role</option>
+        <option value="admin">Administrator</option>
+        <option value="control">Control Room</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <input type="text" placeholder="Username">
+    </div>
+
+    <div class="field">
+      <input type="password" placeholder="Password">
+    </div>
+
+    <button class="btn" onclick="login()">Login</button>
+    <div class="close" onclick="closeModal()">Cancel</div>
+  </div>
 </div>
+
+<script>
+let targetURL = "";
+
+document.querySelectorAll(".card").forEach(card=>{
+  card.addEventListener("click",()=>{
+    targetURL = card.dataset.target;
+    document.getElementById("loginModal").classList.add("active");
+  });
+});
+
+function closeModal(){
+  document.getElementById("loginModal").classList.remove("active");
+}
+
+function login(){
+  const role = document.getElementById("role").value;
+  if(!role){
+    alert("Select role first");
+    return;
+  }
+  // placeholder auth – replace with Laravel/Auth API
+  window.location.href = targetURL;
+}
+</script>
+
 </body>
 </html>

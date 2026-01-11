@@ -1,198 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Venetta Mining Farm – Control Room</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Venetta Farm CRM | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
 
-<style>
-:root{
-  --bg-main:#0b0f1a;
-  --bg-card:rgba(255,255,255,0.06);
-  --accent:#00f5c8;
-  --text-main:#ffffff;
-  --text-sub:#9aa4bf;
-}
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
 
-*{box-sizing:border-box;margin:0;padding:0}
+    body {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+      background: black;
+    }
 
-body{
-  font-family:'Inter',sans-serif;
-  background:radial-gradient(circle at top, #1b2140, #0b0f1a 60%);
-  color:var(--text-main);
-  min-height:100vh;
-  padding:32px 16px;
-  display:flex;
-  justify-content:center;
-}
+    /* Background image - FIT 1 PAGE */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: url("bg.jpg") center center / contain no-repeat;
+      z-index: 0;
+    }
 
-.container{width:100%;max-width:1200px}
+    /* Dark overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1;
+    }
 
-header{text-align:center;margin-bottom:40px}
-header h1{
-  font-size:clamp(1.8rem,4vw,3rem);
-  text-transform:uppercase;
-  color:var(--accent);
-}
-header h2{color:var(--text-sub);margin-top:8px}
+    header {
+      position: relative;
+      z-index: 2;
+      padding: 20px 40px;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:24px;
-}
+    main {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 40px;
+    }
 
-.card{
-  cursor:pointer;
-  position:relative;
-  background:var(--bg-card);
-  backdrop-filter:blur(12px);
-  border-radius:18px;
-  padding:28px 22px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:14px;
-  transition:.35s;
-  box-shadow:0 20px 40px rgba(0,0,0,.35);
-}
-.card:hover{transform:translateY(-6px) scale(1.02)}
-.icon{font-size:2.6rem}
-.card-title{font-weight:600}
+    .login-box {
+      width: 100%;
+      max-width: 380px;
+      background: rgba(15, 25, 45, 0.92);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+    }
 
-/* ===== MODAL ===== */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:99;
-}
-.modal.active{display:flex}
+    .login-box h2 {
+      margin: 0 0 24px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
 
-.modal-box{
-  background:#12182a;
-  border-radius:16px;
-  width:100%;
-  max-width:420px;
-  padding:28px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6);
-}
+    .form-group {
+      margin-bottom: 16px;
+    }
 
-.modal-box h3{
-  text-align:center;
-  margin-bottom:20px;
-  color:var(--accent);
-}
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      opacity: 0.9;
+    }
 
-.field{
-  margin-bottom:14px;
-}
-.field input, .field select{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:none;
-  background:#1c2340;
-  color:#fff;
-}
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: #0b1222;
+      color: #fff;
+      font-size: 14px;
+    }
 
-.btn{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:var(--accent);
-  color:#0b0f1a;
-  font-weight:700;
-  cursor:pointer;
-  margin-top:10px;
-}
+    input::placeholder {
+      color: #9aa4c2;
+    }
 
-.close{
-  text-align:center;
-  margin-top:14px;
-  font-size:.85rem;
-  color:var(--text-sub);
-  cursor:pointer;
-}
-</style>
+    button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    }
+
+    button:hover {
+      opacity: 0.95;
+    }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 16px;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      header {
+        text-align: center;
+        padding: 16px;
+      }
+
+      main {
+        justify-content: center;
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
-<header>
-  <h1>Venetta Farm Control Room</h1>
-  <h2>Internal Headquarters Dashboard</h2>
-</header>
+  <header>
+    Venetta Farm CRM
+  </header>
 
-<div class="grid">
-  <div class="card" data-target="/mining/"><div class="icon">⛏️</div><div class="card-title">Mining Console</div></div>
-  <div class="card" data-target="/network/"><div class="icon">🌐</div><div class="card-title">Network Monitoring</div></div>
-  <div class="card" data-target="/energy/"><div class="icon">⚡</div><div class="card-title">Energy Control</div></div>
-  <div class="card" data-target="/cctv/"><div class="icon">📹</div><div class="card-title">CCTV Surveillance</div></div>
-  <div class="card" data-target="/esg/"><div class="icon">🌱</div><div class="card-title">ESG Metrics</div></div>
-  <div class="card" data-target="/access/"><div class="icon">🔑</div><div class="card-title">Access Log</div></div>
-  <div class="card" data-target="/sensor/"><div class="icon">📟</div><div class="card-title">Sensor Analytics</div></div>
-  <div class="card" data-target="/site/"><div class="icon">🏭</div><div class="card-title">Site Management</div></div>
-</div>
-</div>
+  <main>
+    <div class="login-box">
+      <h2>Secure Login</h2>
 
-<!-- LOGIN MODAL -->
-<div class="modal" id="loginModal">
-  <div class="modal-box">
-    <h3>Secure Access</h3>
+      <form method="POST" action="/api/auth/login">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="Enter username" required />
+        </div>
 
-    <div class="field">
-      <select id="role">
-        <option value="">Select Role</option>
-        <option value="admin">Administrator</option>
-        <option value="control">Control Room</option>
-      </select>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Enter password" required />
+        </div>
+
+        <div class="form-group">
+          <label>Role</label>
+          <select name="role" required>
+            <option value="">Select role</option>
+            <option value="founder">Founder</option>
+            <option value="ops_admin">Operations Admin</option>
+            <option value="ops_engineer">Operations Engineer</option>
+            <option value="finance">Finance</option>
+            <option value="support">Support</option>
+          </select>
+        </div>
+
+        <button type="submit">Login</button>
+      </form>
     </div>
+  </main>
 
-    <div class="field">
-      <input type="text" placeholder="Username">
-    </div>
-
-    <div class="field">
-      <input type="password" placeholder="Password">
-    </div>
-
-    <button class="btn" onclick="login()">Login</button>
-    <div class="close" onclick="closeModal()">Cancel</div>
-  </div>
-</div>
-
-<script>
-let targetURL = "";
-
-document.querySelectorAll(".card").forEach(card=>{
-  card.addEventListener("click",()=>{
-    targetURL = card.dataset.target;
-    document.getElementById("loginModal").classList.add("active");
-  });
-});
-
-function closeModal(){
-  document.getElementById("loginModal").classList.remove("active");
-}
-
-function login(){
-  const role = document.getElementById("role").value;
-  if(!role){
-    alert("Select role first");
-    return;
-  }
-  // placeholder auth – replace with Laravel/Auth API
-  window.location.href = targetURL;
-}
-</script>
+  <footer>
+    Venetta Digital Infrastructure
+  </footer>
 
 </body>
 </html>

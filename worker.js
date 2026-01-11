@@ -2,9 +2,9 @@ export default {
   async fetch(req, env) {
     const url = new URL(req.url);
 
-    if (url.pathname === "/api/auth/login") return login(req, env);
-    if (url.pathname === "/api/auth/verify-otp") return verifyOtp(req, env);
-    if (url.pathname === "/api/auth/session") return session(req, env);
+    if (url.pathname === "/login") return login(req, env);
+    if (url.pathname === "/verify-otp") return verifyOtp(req, env);
+    if (url.pathname === "/session") return session(req, env);
 
     return new Response("Not Found", { status: 404 });
   }

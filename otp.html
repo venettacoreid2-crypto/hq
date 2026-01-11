@@ -95,7 +95,7 @@
 
     // HARD GUARD — no session, no OTP page
     if (!sessionId) {
-      location.href = "/login.html";
+      location.href = "/index.html";
     }
 
     document.getElementById("verifyBtn").onclick = async () => {
@@ -106,7 +106,7 @@
         return;
       }
 
-      const res = await fetch("/api/auth/verify-otp", {
+      const res = await fetch("/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -130,7 +130,7 @@
     };
 
     document.getElementById("resendBtn").onclick = () => {
-      fetch("/api/auth/resend-otp", {
+      fetch("/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId })
@@ -141,7 +141,7 @@
     };
 
     function sendTelemetry(event) {
-      fetch("/api/telemetry/ingest", {
+      fetch("/ingest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

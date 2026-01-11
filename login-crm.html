@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Venetta Farm CRM | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: url("bg.jpg") no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+    }
+
+    /* Overlay for readability */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 20, 0.65);
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      padding: 20px 40px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 40px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 380px;
+      background: rgba(15, 25, 45, 0.9);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .login-box h2 {
+      margin: 0 0 24px;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      opacity: 0.9;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: #0b1222;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .form-group input::placeholder {
+      color: #9aa4c2;
+    }
+
+    .login-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: #fff;
+    }
+
+    .login-btn:hover {
+      opacity: 0.95;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      header {
+        text-align: center;
+        padding: 16px;
+      }
+
+      main {
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .login-box {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    Venetta Farm CRM
+  </header>
+
+  <main>
+    <div class="login-box">
+      <h2>Secure Login</h2>
+
+      <form method="POST" action="/api/auth/login">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="Enter username" required />
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Enter password" required />
+        </div>
+
+        <div class="form-group">
+          <label>Role</label>
+          <select name="role" required>
+            <option value="">Select role</option>
+            <option value="founder">Founder</option>
+            <option value="ops_admin">Operations Admin</option>
+            <option value="ops_engineer">Operations Engineer</option>
+            <option value="finance">Finance</option>
+            <option value="support">Support</option>
+          </select>
+        </div>
+
+        <button type="submit" class="login-btn">
+          Login
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    Venetta Digital Infrastructure
+  </footer>
+</body>
+</html>

@@ -1,89 +1,65 @@
-const INDEX_HTML = `PUT THE ABOVE HTML HERE AS STRING`; // backticks, escape inner backticks if any
-
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
 
-    // ROOT / HEALTH CHECK
-    if (url.pathname === "/") {
-      return new Response(JSON.stringify({ service:"Venetta Auth HQ", status:"ok", time:new Date().toISOString() }),
-        { headers: { "Content-Type":"application/json" } });
-    }
-
-    // LOGIN
-    if (url.pathname === "/login") {
-      if(req.method === "GET") {
-        // Kembalikan HTML
-        return new Response(INDEX_HTML, { headers: { "Content-Type": "text/html" } });
-      } else if(req.method === "POST") {
-        return login(req, env);
-      } else {
-        return new Response("Method Not Allowed", { status: 405 });
-      }
-    }
-
-    // VERIFY OTP
+    if(url.pathname === "/") return serveIndex(env);
+    if(url.pathname === "/login") return login(req, env);
     if(url.pathname === "/verify-otp") return verifyOtp(req, env);
-
-    // SESSION
     if(url.pathname === "/session") return session(req, env);
 
-    return new Response("Not Found", { status: 404 });
+    return new Response("Not Found", {status:404});
   }
 };
 
+async function serveIndex(env){
+  const html = await env.ASSETS.fetch("index.html");
+  return new Response(html.body, { headers:{ "Content-Type":"text/html" } });
+}
+
 async function login(req, env){
-  if(req.method !== "POST") return json({error:"Invalid method"},405);
   const { username, password } = await req.json();
+  const user = await env.DB.prepare(
+    "SELECT * FROM users WHERE username=? AND password=?"
+  ).bind(username, password).first();
 
-  const user = await env.DB.prepare("SELECT * FROM users WHERE username=?")
-    .bind(username).first();
-
-  if(!user || user.password !== password)
-    return json({error:"Invalid credentials"},401);
+  if(!user) return json({error:"Invalid credentials"},401);
 
   const sessionId = crypto.randomUUID();
-  const otp = Math.floor(100000 + Math.random()*900000).toString();
+  const otp = Math.floor(100000+Math.random()*900000).toString();
 
   await env.DB.batch([
-    env.DB.prepare("INSERT INTO sessions VALUES (?,?,?,?,?,?)").bind(
-      sessionId, user.id, 0,
-      new Date(Date.now()+10*60e3).toISOString(),
-      req.headers.get("cf-connecting-ip"),
-      req.headers.get("user-agent")
-    ),
-    env.DB.prepare("INSERT INTO otp_tokens VALUES (?,?,?,?)").bind(
-      crypto.randomUUID(),
-      sessionId,
-      otp,
-      new Date(Date.now()+5*60e3).toISOString()
-    )
+    env.DB.prepare("INSERT INTO sessions VALUES (?,?,?,?,?,?)")
+       .bind(sessionId, user.id, 0, new Date(Date.now()+10*60e3).toISOString(), req.headers.get("cf-connecting-ip"), req.headers.get("user-agent")),
+    env.DB.prepare("INSERT INTO otp_tokens VALUES (?,?,?,?)")
+       .bind(crypto.randomUUID(), sessionId, otp, new Date(Date.now()+5*60e3).toISOString())
   ]);
 
-  console.log("OTP:", otp); // stub
-  return json({ sessionId });
+  console.log("OTP:", otp); // bisa diganti kirim email
+  return json({sessionId});
 }
 
 async function verifyOtp(req, env){
   const { sessionId, otp } = await req.json();
-  const token = await env.DB.prepare("SELECT * FROM otp_tokens WHERE session_id=? AND code=?")
-    .bind(sessionId, otp).first();
+  const token = await env.DB.prepare(
+    "SELECT * FROM otp_tokens WHERE session_id=? AND code=?"
+  ).bind(sessionId, otp).first();
 
   if(!token) return json({error:"Invalid OTP"},401);
 
   await env.DB.prepare("UPDATE sessions SET otp_verified=1 WHERE id=?").bind(sessionId).run();
-  const user = await env.DB.prepare("SELECT role FROM users WHERE id=(SELECT user_id FROM sessions WHERE id=?)")
-    .bind(sessionId).first();
+
+  const user = await env.DB.prepare(
+    "SELECT role FROM users WHERE id=(SELECT user_id FROM sessions WHERE id=?)"
+  ).bind(sessionId).first();
 
   return json({success:true, role:user.role});
 }
 
 async function session(req, env){
   const sid = req.headers.get("authorization");
-  const s = await env.DB.prepare("SELECT * FROM sessions WHERE id=? AND otp_verified=1")
-    .bind(sid).first();
+  const s = await env.DB.prepare("SELECT * FROM sessions WHERE id=? AND otp_verified=1").bind(sid).first();
   if(!s) return json({valid:false},401);
   return json({valid:true, role:s.role});
 }
 
-const json = (d,s=200) => new Response(JSON.stringify(d), {status:s, headers:{ "Content-Type":"application/json" }});
+const json = (d, s=200) => new Response(JSON.stringify(d), {status:s, headers:{"Content-Type":"application/json"}});

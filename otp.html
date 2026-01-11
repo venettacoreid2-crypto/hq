@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTP Verification | Venetta Operations Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * { box-sizing: border-box; font-family: Inter, "Segoe UI", Arial, sans-serif; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #020617;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(15,25,45,.95);
+      padding: 36px;
+      border-radius: 16px;
+      box-shadow: 0 40px 80px rgba(0,0,0,.7);
+      text-align: center;
+    }
+
+    h1 { font-size: 22px; margin-bottom: 8px; }
+    p { font-size: 14px; opacity: .85; margin-bottom: 24px; }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      font-size: 18px;
+      text-align: center;
+      letter-spacing: 6px;
+      background: #0b1222;
+      color: #fff;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: #fff;
+    }
+
+    .resend {
+      margin-top: 16px;
+      font-size: 12px;
+      opacity: .7;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 11px;
+      opacity: .6;
+      font-family: monospace;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>Email Verification</h1>
+    <p>Enter the 6-digit OTP sent to your registered email</p>
+
+    <input id="otp" maxlength="6" placeholder="••••••" />
+
+    <button id="verifyBtn">Verify & Continue</button>
+
+    <div class="resend" id="resendBtn">Resend OTP</div>
+
+    <footer>
+      Venetta Digital Infrastructure<br/>
+      Secure Access Layer
+    </footer>
+  </div>
+
+  <!-- OTP + SESSION + TELEMETRY -->
+  <script>
+    const sessionId = localStorage.getItem("session_id");
+
+    // HARD GUARD — no session, no OTP page
+    if (!sessionId) {
+      location.href = "/login.html";
+    }
+
+    document.getElementById("verifyBtn").onclick = async () => {
+      const otp = document.getElementById("otp").value;
+
+      if (otp.length !== 6) {
+        alert("OTP must be 6 digits");
+        return;
+      }
+
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          otp
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        sendTelemetry("otp_failed");
+        alert("Invalid or expired OTP");
+        return;
+      }
+
+      sendTelemetry("otp_verified");
+
+      // Backend decides role → frontend only redirects
+      location.href = `/dashboard-${data.role}.html`;
+    };
+
+    document.getElementById("resendBtn").onclick = () => {
+      fetch("/api/auth/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId })
+      });
+
+      sendTelemetry("otp_resent");
+      alert("OTP resent to your email");
+    };
+
+    function sendTelemetry(event) {
+      fetch("/api/telemetry/ingest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event,
+          context: "otp_verification",
+          sessionId,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          platform: navigator.platform,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        })
+      }).catch(() => {});
+    }
+  </script>
+
+</body>
+</html>

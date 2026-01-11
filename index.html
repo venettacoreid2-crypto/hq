@@ -4,28 +4,41 @@
   <meta charset="UTF-8" />
   <title>Venetta Operations Console | Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
     * { box-sizing: border-box; font-family: "Segoe UI", Inter, Arial, sans-serif; }
     html, body { margin: 0; height: 100%; overflow: hidden; }
-    body { position: relative; min-height: 100vh; display: flex; flex-direction: column; color: #fff; background: #000; }
-    body::before { content: ""; position: fixed; inset: 0; background: url("bg.jpg") center / cover no-repeat; z-index: 0; }
-    body::after { content: ""; position: fixed; inset: 0; background: linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.8)); z-index: 1; }
-    .hero { position: absolute; top: 56px; left: 56px; z-index: 2; text-transform: uppercase; }
-    .hero-main { font-size: 56px; font-weight: 800; letter-spacing: 5px; background: linear-gradient(135deg, #60a5fa, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero-sub { margin-top: 8px; font-size: 16px; letter-spacing: 3px; opacity: .9; }
-    main { position: relative; z-index: 2; flex: 1; display: flex; align-items: center; justify-content: flex-end; padding: 40px 60px; }
-    .login-box { width: 100%; max-width: 380px; background: rgba(15,25,45,.92); border-radius: 14px; padding: 32px; box-shadow: 0 30px 70px rgba(0,0,0,.7); }
-    .login-box h2 { margin-bottom: 24px; text-align: center; font-size: 18px; font-weight: 600; }
-    .form-group { margin-bottom: 16px; }
-    label { font-size: 13px; opacity: .85; display: block; margin-bottom: 6px; }
-    input { width: 100%; padding: 12px 14px; border-radius: 8px; border: none; background: #0b1222; color: #fff; }
-    button { width: 100%; margin-top: 14px; padding: 12px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #3b82f6, #06b6d4); color: #fff; }
-    footer { position: relative; z-index: 2; text-align: center; padding: 14px; font-size: 12px; opacity: .85; font-family: monospace; }
-    @media (max-width: 768px) { .hero { position: relative; left: 0; top: 0; text-align: center; margin: 24px 0 8px; } main { justify-content: center; padding: 20px; } }
+    body {
+      position: relative; min-height: 100vh;
+      display: flex; flex-direction: column;
+      color: #fff; background: #000;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0;
+      background: url("bg.jpg") center / cover no-repeat;
+      z-index: 0;
+    }
+    body::after {
+      content: ""; position: fixed; inset: 0;
+      background: linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.8));
+      z-index: 1;
+    }
+    .hero { position: absolute; top:56px; left:56px; z-index:2; text-transform:uppercase; }
+    .hero-main { font-size:56px; font-weight:800; letter-spacing:5px;
+      background: linear-gradient(135deg,#60a5fa,#22d3ee);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .hero-sub { margin-top:8px; font-size:16px; letter-spacing:3px; opacity:.9; }
+    main { position:relative; z-index:2; flex:1; display:flex; align-items:center; justify-content:flex-end; padding:40px 60px; }
+    .login-box { width:100%; max-width:380px; background:rgba(15,25,45,.92); border-radius:14px; padding:32px; box-shadow:0 30px 70px rgba(0,0,0,.7); }
+    .login-box h2 { margin-bottom:24px; text-align:center; font-size:18px; font-weight:600; }
+    .form-group { margin-bottom:16px; }
+    label { font-size:13px; opacity:.85; display:block; margin-bottom:6px; }
+    input { width:100%; padding:12px 14px; border-radius:8px; border:none; background:#0b1222; color:#fff; }
+    button { width:100%; margin-top:14px; padding:12px; border-radius:8px; border:none; font-weight:600; cursor:pointer; background:linear-gradient(135deg,#3b82f6,#06b6d4); color:#fff; }
+    footer { position:relative; z-index:2; text-align:center; padding:14px; font-size:12px; opacity:.85; font-family:monospace; }
+    @media (max-width:768px){ .hero{position:relative; left:0; top:0; text-align:center; margin:24px 0 8px;} main{justify-content:center; padding:20px;} }
   </style>
 </head>
-
 <body>
   <div class="hero">
     <div class="hero-main">VENETTA</div>
@@ -49,36 +62,27 @@
     </div>
   </main>
 
-  <footer id="footer-info">
-    © 2026 Venetta Digital Infrastructure | ENV: HQ | Host: <span id="host">-</span> | IP: <span id="ip">detecting...</span>
+  <footer>
+    © 2026 Venetta Digital Infrastructure | ENV: HQ | Host: <span id="host">-</span>
   </footer>
 
   <script>
     document.getElementById("host").textContent = location.hostname;
-    fetch("https://api.ipify.org?format=json")
-      .then(r => r.json())
-      .then(d => document.getElementById("ip").textContent = d.ip)
-      .catch(() => document.getElementById("ip").textContent = "n/a");
 
     document.getElementById("loginForm").onsubmit = async e => {
       e.preventDefault();
       const res = await fetch("/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
         body: JSON.stringify({
           username: username.value,
           password: password.value
         })
       });
-
-      if (!res.ok) {
-        alert("Invalid credentials");
-        return;
-      }
-
+      if(!res.ok){ alert("Invalid credentials"); return; }
       const data = await res.json();
       localStorage.setItem("session_id", data.sessionId);
-      location.href = "/otp.html";
+      alert("Login successful! Session: " + data.sessionId);
     };
   </script>
 </body>

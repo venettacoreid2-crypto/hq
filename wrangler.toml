@@ -2,6 +2,17 @@ name = "hq"
 main = "worker.js"
 compatibility_date = "2025-01-01"
 
+type = "javascript"
+
+[env.production]
+kv_namespaces = [
+  { binding = "SESSIONS", id = "venetta_sessions" }
+]
+
+[site]
+bucket = "./public"
+entry-point = "workers-site"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "venecore"

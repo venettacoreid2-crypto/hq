@@ -22,18 +22,6 @@ export default {
   }
 };
 
-export default {
-  async fetch(req, env) {
-    const url = new URL(req.url);
-
-    if (url.pathname === "/login") return login(req, env);
-    if (url.pathname === "/verify-otp") return verifyOtp(req, env);
-    if (url.pathname === "/session") return session(req, env);
-
-    return new Response("Not Found", { status: 404 });
-  }
-};
-
 async function login(req, env) {
   const { username, password } = await req.json();
   const user = await env.DB.prepare(

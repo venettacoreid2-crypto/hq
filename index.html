@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <title>Venetta Operations Console | Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 <style>
 * { box-sizing: border-box; font-family: "Segoe UI", Inter, Arial, sans-serif; }
 html, body { margin: 0; height: 100%; overflow: hidden; }
@@ -62,7 +61,6 @@ main {
   justify-content: flex-end;
   padding: 40px 60px;
 }
-
 .login-box {
   width: 100%;
   max-width: 380px;
@@ -71,14 +69,12 @@ main {
   padding: 32px;
   box-shadow: 0 30px 70px rgba(0,0,0,.7);
 }
-
 .login-box h2 {
   margin-bottom: 24px;
   text-align: center;
   font-size: 18px;
   font-weight: 600;
 }
-
 .form-group { margin-bottom: 16px; }
 label { font-size: 13px; opacity: .85; display: block; margin-bottom: 6px; }
 input {
@@ -90,13 +86,15 @@ input {
   color: #fff;
 }
 
-.password-wrapper { position: relative; }
-.password-wrapper .eye {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+.password-wrapper {
+  position: relative;
+}
+.toggle-password {
+  display: block;
+  margin: 6px auto 0 auto;
+  text-align: center;
   cursor: pointer;
+  color: #60a5fa;
   user-select: none;
 }
 
@@ -110,6 +108,12 @@ button {
   cursor: pointer;
   background: linear-gradient(135deg, #3b82f6, #06b6d4);
   color: #fff;
+}
+
+#error {
+  color: #f87171;
+  margin-top: 10px;
+  text-align: center;
 }
 
 footer {
@@ -128,7 +132,6 @@ footer {
 }
 </style>
 </head>
-
 <body>
 
 <div class="hero">
@@ -148,11 +151,11 @@ footer {
     <div class="form-group password-wrapper">
       <label>Password</label>
       <input id="password" type="password" required />
-      <span class="eye" onclick="togglePassword()">👁</span>
+      <span class="toggle-password" onclick="togglePassword()">👁 Show/Hide</span>
     </div>
 
     <button onclick="login()">Login</button>
-    <div id="error" style="margin-top:10px;color:#f87171;"></div>
+    <div id="error"></div>
   </div>
 </main>
 
@@ -165,6 +168,7 @@ footer {
 
 <script>
 document.getElementById("host").textContent = location.hostname;
+
 fetch("https://api.ipify.org?format=json")
   .then(r => r.json())
   .then(d => document.getElementById("ip").textContent = d.ip)
@@ -180,7 +184,7 @@ async function login() {
   const password = document.getElementById("password").value;
 
   try {
-    const res = await fetch("/login", {
+    const res = await fetch("https://hq.venettacore-id2.workers.dev/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
@@ -189,14 +193,14 @@ async function login() {
     const data = await res.json();
 
     if (!res.ok) {
-      document.getElementById("error").innerText = data.error || "Invalid credentials";
+      document.getElementById("error").innerText = data.error || "Login failed";
       return;
     }
 
     localStorage.setItem("session_id", data.sessionId);
     location.href = "/otp.html";
-  } catch (e) {
-    document.getElementById("error").innerText = "Login failed. Check your connection.";
+  } catch (err) {
+    document.getElementById("error").innerText = "Login failed. Check your connection";
   }
 }
 </script>

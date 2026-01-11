@@ -5,11 +5,7 @@ compatibility_date = "2025-01-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "venecore"
-database_id = ""d1_databases": [{
-    "binding": "DB",
-    "database_name": "venecore",
-    "database_id": "c737bd18-8fe8-4519-ae69-2cbbc4381fd2"
- }]"
+database_id = "c737bd18-8fe8-4519-ae69-2cbbc4381fd2": 
 
 [vars]
 JWT_SECRET = "Venecoredatabaseheadquarter"

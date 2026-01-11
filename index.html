@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Venetta Farm CRM | Login</title>
+  <title>Venetta CRM | Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
     * {
       box-sizing: border-box;
-      font-family: "Segoe UI", Arial, sans-serif;
+      font-family: "Segoe UI", Inter, Arial, sans-serif;
     }
 
     html, body {
@@ -19,18 +19,19 @@
 
     body {
       position: relative;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      color: #fff;
-      background: black;
+      color: #ffffff;
+      background: #000;
     }
 
-    /* Background image - FIT 1 PAGE */
+    /* Background image (COVER – boleh terpotong) */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background: url("bg.jpg") center center / contain no-repeat;
+      background: url("bg.jpg") center center / cover no-repeat;
       z-index: 0;
     }
 
@@ -39,17 +40,37 @@
       content: "";
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: linear-gradient(
+        rgba(0, 0, 0, 0.65),
+        rgba(0, 0, 0, 0.75)
+      );
       z-index: 1;
     }
 
-    header {
-      position: relative;
+    /* Hero Title */
+    .hero {
+      position: absolute;
+      top: 60px;
+      left: 60px;
       z-index: 2;
-      padding: 20px 40px;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+    }
+
+    .hero-main {
+      font-size: 56px;
+      font-weight: 800;
+      letter-spacing: 5px;
+      line-height: 1;
+      background: linear-gradient(135deg, #60a5fa, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .hero-sub {
+      margin-top: 8px;
+      font-size: 18px;
+      letter-spacing: 4px;
+      opacity: 0.9;
     }
 
     main {
@@ -59,16 +80,16 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding: 40px;
+      padding: 40px 60px;
     }
 
     .login-box {
       width: 100%;
       max-width: 380px;
       background: rgba(15, 25, 45, 0.92);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 32px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
     }
 
     .login-box h2 {
@@ -76,6 +97,7 @@
       text-align: center;
       font-size: 18px;
       font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
     .form-group {
@@ -86,10 +108,11 @@
       display: block;
       margin-bottom: 6px;
       font-size: 13px;
-      opacity: 0.9;
+      opacity: 0.85;
     }
 
-    input, select {
+    input,
+    select {
       width: 100%;
       padding: 12px 14px;
       border-radius: 8px;
@@ -106,7 +129,7 @@
 
     button {
       width: 100%;
-      margin-top: 12px;
+      margin-top: 14px;
       padding: 12px;
       border-radius: 8px;
       border: none;
@@ -127,14 +150,27 @@
       text-align: center;
       padding: 16px;
       font-size: 13px;
-      opacity: 0.85;
+      opacity: 0.8;
     }
 
     /* Mobile */
     @media (max-width: 768px) {
-      header {
+      .hero {
+        position: relative;
+        top: 0;
+        left: 0;
         text-align: center;
-        padding: 16px;
+        margin: 24px 0 8px;
+      }
+
+      .hero-main {
+        font-size: 36px;
+        letter-spacing: 3px;
+      }
+
+      .hero-sub {
+        font-size: 14px;
+        letter-spacing: 2px;
       }
 
       main {
@@ -147,10 +183,13 @@
 
 <body>
 
-  <header>
-    Venetta Farm CRM
-  </header>
+  <!-- Hero Brand -->
+  <div class="hero">
+    <div class="hero-main">VENETTA</div>
+    <div class="hero-sub">Venetta Farm CRM</div>
+  </div>
 
+  <!-- Login -->
   <main>
     <div class="login-box">
       <h2>Secure Login</h2>

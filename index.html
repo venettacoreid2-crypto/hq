@@ -6,17 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: "Segoe UI", Inter, Arial, sans-serif;
-    }
-
-    html, body {
-      margin: 0;
-      height: 100%;
-      overflow: hidden;
-    }
-
+    * { box-sizing: border-box; font-family: "Segoe UI", Inter, Arial, sans-serif; }
+    html, body { margin: 0; height: 100%; overflow: hidden; }
     body {
       position: relative;
       min-height: 100vh;
@@ -25,20 +16,18 @@
       color: #ffffff;
       background: #000;
     }
-
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background: url("bg.jpg") center center / cover no-repeat;
+      background: url("bg.jpg") center / cover no-repeat;
       z-index: 0;
     }
-
     body::after {
       content: "";
       position: fixed;
       inset: 0;
-      background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.8));
+      background: linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.8));
       z-index: 1;
     }
 
@@ -49,7 +38,6 @@
       z-index: 2;
       text-transform: uppercase;
     }
-
     .hero-main {
       font-size: 56px;
       font-weight: 800;
@@ -58,12 +46,11 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
     .hero-sub {
       margin-top: 8px;
       font-size: 16px;
       letter-spacing: 3px;
-      opacity: 0.9;
+      opacity: .9;
     }
 
     main {
@@ -79,10 +66,10 @@
     .login-box {
       width: 100%;
       max-width: 380px;
-      background: rgba(15,25,45,0.92);
+      background: rgba(15,25,45,.92);
       border-radius: 14px;
       padding: 32px;
-      box-shadow: 0 30px 70px rgba(0,0,0,0.7);
+      box-shadow: 0 30px 70px rgba(0,0,0,.7);
     }
 
     .login-box h2 {
@@ -93,15 +80,8 @@
     }
 
     .form-group { margin-bottom: 16px; }
-
-    label {
-      font-size: 13px;
-      opacity: 0.85;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    input, select {
+    label { font-size: 13px; opacity: .85; display: block; margin-bottom: 6px; }
+    input {
       width: 100%;
       padding: 12px 14px;
       border-radius: 8px;
@@ -128,22 +108,13 @@
       text-align: center;
       padding: 14px;
       font-size: 12px;
-      opacity: 0.85;
+      opacity: .85;
       font-family: monospace;
     }
 
     @media (max-width: 768px) {
-      .hero {
-        position: relative;
-        left: 0;
-        top: 0;
-        text-align: center;
-        margin: 24px 0 8px;
-      }
-      main {
-        justify-content: center;
-        padding: 20px;
-      }
+      .hero { position: relative; left: 0; top: 0; text-align: center; margin: 24px 0 8px; }
+      main { justify-content: center; padding: 20px; }
     }
   </style>
 </head>
@@ -158,27 +129,16 @@
   <main>
     <div class="login-box">
       <h2>Secure Access</h2>
-      <form method="POST" action="/api/auth/login">
+
+      <form id="loginForm">
         <div class="form-group">
           <label>Username</label>
-          <input type="text" name="username" required />
+          <input id="username" required />
         </div>
 
         <div class="form-group">
           <label>Password</label>
-          <input type="password" name="password" required />
-        </div>
-
-        <div class="form-group">
-          <label>Role</label>
-          <select name="role" required>
-            <option value="">Select role</option>
-            <option value="founder">Founder</option>
-            <option value="ops_admin">Operations Admin</option>
-            <option value="ops_engineer">Operations Engineer</option>
-            <option value="finance">Finance</option>
-            <option value="support">Support</option>
-          </select>
+          <input id="password" type="password" required />
         </div>
 
         <button type="submit">Login</button>
@@ -187,51 +147,43 @@
   </main>
 
   <footer id="footer-info">
-    © 2026 Venetta Digital Infrastructure <p>|
+    © 2026 Venetta Digital Infrastructure |
     ENV: HQ |
     Host: <span id="host">-</span> |
-    IP: <span id="ip">detecting...</span> | </p>
+    IP: <span id="ip">detecting...</span>
   </footer>
 
-  <!-- ENTERPRISE TELEMETRY -->
+  <!-- AUTH + TELEMETRY -->
   <script>
-    (function () {
-      const telemetry = {
-        event: "page_view",
-        context: "login_console",
-        environment: "HQ",
-        hostname: window.location.hostname,
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        screen: `${screen.width}x${screen.height}`,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        timestamp: new Date().toISOString(),
-        ip: null
-      };
+    document.getElementById("host").textContent = location.hostname;
 
-      document.getElementById("host").textContent = telemetry.hostname;
+    fetch("https://api.ipify.org?format=json")
+      .then(r => r.json())
+      .then(d => document.getElementById("ip").textContent = d.ip)
+      .catch(() => document.getElementById("ip").textContent = "n/a");
 
-      fetch("https://api.ipify.org?format=json")
-        .then(r => r.json())
-        .then(d => {
-          telemetry.ip = d.ip;
-          document.getElementById("ip").textContent = d.ip;
-          sendTelemetry(telemetry);
+    document.getElementById("loginForm").onsubmit = async e => {
+      e.preventDefault();
+
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: username.value,
+          password: password.value
         })
-        .catch(() => {
-          document.getElementById("ip").textContent = "unavailable";
-          sendTelemetry(telemetry);
-        });
+      });
 
-      function sendTelemetry(payload) {
-        fetch("/api/telemetry/ingest", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        }).catch(() => {});
+      if (!res.ok) {
+        alert("Invalid credentials");
+        return;
       }
-    })();
+
+      const data = await res.json();
+      localStorage.setItem("session_id", data.sessionId);
+
+      location.href = "/otp.html";
+    };
   </script>
 
 </body>

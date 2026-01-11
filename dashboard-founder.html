@@ -5,6 +5,6 @@
   const r = await fetch("/api/auth/session",{
     headers:{authorization:localStorage.sid}
   });
-  if(!r.ok) location.href="/login.html";
+  if(!r.ok) location.href="/index.html";
 })();
 </script>

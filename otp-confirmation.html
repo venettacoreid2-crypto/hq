@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTP Verification | Venetta Operations Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #020617;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(15,25,45,0.95);
+      padding: 36px;
+      border-radius: 16px;
+      box-shadow: 0 40px 80px rgba(0,0,0,.7);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 14px;
+      opacity: 0.85;
+      margin-bottom: 24px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      font-size: 18px;
+      text-align: center;
+      letter-spacing: 6px;
+      background: #0b1222;
+      color: #fff;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: #fff;
+    }
+
+    .resend {
+      margin-top: 16px;
+      font-size: 12px;
+      opacity: 0.7;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 11px;
+      opacity: 0.6;
+      font-family: monospace;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>Email Verification</h1>
+    <p>Enter the 6-digit OTP sent to your registered email</p>
+
+    <input id="otp" maxlength="6" placeholder="••••••" />
+
+    <button onclick="verifyOtp()">Verify & Continue</button>
+
+    <div class="resend" onclick="resendOtp()">Resend OTP</div>
+
+    <footer>
+      Venetta Digital Infrastructure<br/>
+      Secure Access Layer
+    </footer>
+  </div>
+
+  <script>
+    function verifyOtp() {
+      const otp = document.getElementById("otp").value;
+
+      fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ otp })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          alert("Invalid or expired OTP");
+          return;
+        }
+
+        // ROLE-BASED REDIRECT
+        switch (data.role) {
+          case "founder":
+            window.location.href = "/dashboard/founder";
+            break;
+          case "ops_admin":
+            window.location.href = "/dashboard/operations";
+            break;
+          case "ops_engineer":
+            window.location.href = "/dashboard/engineering";
+            break;
+          case "finance":
+            window.location.href = "/dashboard/finance";
+            break;
+          case "support":
+            window.location.href = "/dashboard/support";
+            break;
+          default:
+            window.location.href = "/dashboard";
+        }
+      });
+    }
+
+    function resendOtp() {
+      fetch("/api/auth/resend-otp", { method: "POST" })
+        .then(() => alert("OTP sent"));
+    }
+  </script>
+
+</body>
+</html>

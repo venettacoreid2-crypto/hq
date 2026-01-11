@@ -1,0 +1,10 @@
+<h1>Operations Dashboard</h1>
+
+<script>
+(async ()=>{
+  const r = await fetch("/api/auth/session",{
+    headers:{authorization:localStorage.sid}
+  });
+  if(!r.ok) location.href="/login.html";
+})();
+</script>

@@ -3,7 +3,7 @@ export default {
     const url = new URL(req.url);
 
     // ROOT / HEALTH CHECK
-    if (url.pathname === "/") {
+    if (url.pathname === "/" && req.method === "GET") {
       return new Response(
         JSON.stringify({
           service: "Venetta Auth HQ",
@@ -14,9 +14,14 @@ export default {
       );
     }
 
-    if (url.pathname === "/login") return login(req, env);
-    if (url.pathname === "/verify-otp") return verifyOtp(req, env);
-    if (url.pathname === "/session") return session(req, env);
+    // LOGIN (POST)
+    if (url.pathname === "/login" && req.method === "POST") return login(req, env);
+
+    // VERIFY OTP (POST)
+    if (url.pathname === "/verify-otp" && req.method === "POST") return verifyOtp(req, env);
+
+    // CHECK SESSION (GET)
+    if (url.pathname === "/session" && req.method === "GET") return session(req, env);
 
     return new Response("Not Found", { status: 404 });
   }
@@ -25,8 +30,8 @@ export default {
 async function login(req, env) {
   const { username, password } = await req.json();
   const user = await env.DB.prepare(
-    "SELECT * FROM users WHERE username=?"
-  ).bind(username).first();
+    "SELECT * FROM users WHERE username=? AND password=?"
+  ).bind(username, password).first();
 
   if (!user) return json({ error: "Invalid credentials" }, 401);
 
@@ -35,7 +40,7 @@ async function login(req, env) {
 
   await env.DB.batch([
     env.DB.prepare(
-      "INSERT INTO sessions VALUES (?,?,?,?,?,?)"
+      "INSERT INTO sessions (id, user_id, otp_verified, expires_at, ip, ua) VALUES (?,?,?,?,?,?)"
     ).bind(
       sessionId, user.id, 0,
       new Date(Date.now() + 10 * 60e3).toISOString(),
@@ -43,7 +48,7 @@ async function login(req, env) {
       req.headers.get("user-agent")
     ),
     env.DB.prepare(
-      "INSERT INTO otp_tokens VALUES (?,?,?,?)"
+      "INSERT INTO otp_tokens (id, session_id, code, expires_at) VALUES (?,?,?,?)"
     ).bind(
       crypto.randomUUID(),
       sessionId,
@@ -52,15 +57,13 @@ async function login(req, env) {
     )
   ]);
 
-  // send email OTP (stub)
-  console.log("OTP:", otp);
+  console.log("OTP:", otp); // placeholder, nanti diganti email/WA
 
   return json({ sessionId });
 }
 
 async function verifyOtp(req, env) {
   const { sessionId, otp } = await req.json();
-
   const token = await env.DB.prepare(
     "SELECT * FROM otp_tokens WHERE session_id=? AND code=?"
   ).bind(sessionId, otp).first();
@@ -81,7 +84,7 @@ async function verifyOtp(req, env) {
 async function session(req, env) {
   const sid = req.headers.get("authorization");
   const s = await env.DB.prepare(
-    "SELECT * FROM sessions WHERE id=? AND otp_verified=1"
+    "SELECT s.id, u.role FROM sessions s JOIN users u ON s.user_id=u.id WHERE s.id=? AND s.otp_verified=1"
   ).bind(sid).first();
 
   if (!s) return json({ valid: false }, 401);
@@ -89,4 +92,4 @@ async function session(req, env) {
 }
 
 const json = (d, s = 200) =>
-  new Response(JSON.stringify(d), { status: s });
+  new Response(JSON.stringify(d), { status: s, headers: { "Content-Type": "application/json" } });

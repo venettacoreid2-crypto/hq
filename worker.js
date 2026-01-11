@@ -1,27 +1,17 @@
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
-
-    // ROOT / HEALTH CHECK
-    if (url.pathname === "/" && req.method === "GET") {
-      return new Response(
-        JSON.stringify({
-          service: "Venetta Auth HQ",
-          status: "ok",
-          time: new Date().toISOString()
-        }),
-        { headers: { "Content-Type": "application/json" } }
-      );
+    if (url.pathname === "/") {
+      return new Response(JSON.stringify({
+        service: "Venetta Auth HQ",
+        status: "ok",
+        time: new Date().toISOString()
+      }), { headers: { "Content-Type": "application/json" } });
     }
 
-    // LOGIN (POST)
-    if (url.pathname === "/login" && req.method === "POST") return login(req, env);
-
-    // VERIFY OTP (POST)
-    if (url.pathname === "/verify-otp" && req.method === "POST") return verifyOtp(req, env);
-
-    // CHECK SESSION (GET)
-    if (url.pathname === "/session" && req.method === "GET") return session(req, env);
+    if (url.pathname === "/login") return login(req, env);
+    if (url.pathname === "/verify-otp") return verifyOtp(req, env);
+    if (url.pathname === "/session") return session(req, env);
 
     return new Response("Not Found", { status: 404 });
   }
@@ -40,7 +30,7 @@ async function login(req, env) {
 
   await env.DB.batch([
     env.DB.prepare(
-      "INSERT INTO sessions (id, user_id, otp_verified, expires_at, ip, ua) VALUES (?,?,?,?,?,?)"
+      "INSERT INTO sessions (id, user_id, otp_verified, expires_at, ip, user_agent) VALUES (?,?,?,?,?,?)"
     ).bind(
       sessionId, user.id, 0,
       new Date(Date.now() + 10 * 60e3).toISOString(),
@@ -57,8 +47,7 @@ async function login(req, env) {
     )
   ]);
 
-  console.log("OTP:", otp); // placeholder, nanti diganti email/WA
-
+  console.log("OTP:", otp); // For testing; replace with email in prod
   return json({ sessionId });
 }
 
@@ -84,7 +73,7 @@ async function verifyOtp(req, env) {
 async function session(req, env) {
   const sid = req.headers.get("authorization");
   const s = await env.DB.prepare(
-    "SELECT s.id, u.role FROM sessions s JOIN users u ON s.user_id=u.id WHERE s.id=? AND s.otp_verified=1"
+    "SELECT * FROM sessions WHERE id=? AND otp_verified=1"
   ).bind(sid).first();
 
   if (!s) return json({ valid: false }, 401);
@@ -92,4 +81,4 @@ async function session(req, env) {
 }
 
 const json = (d, s = 200) =>
-  new Response(JSON.stringify(d), { status: s, headers: { "Content-Type": "application/json" } });
+  new Response(JSON.stringify(d), { status: s });
